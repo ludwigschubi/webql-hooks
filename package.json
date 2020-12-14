@@ -4,7 +4,7 @@
   "description": "A library that exposes hooks to query webql schemas",
   "main": "lib/index.js",
   "scripts": {
-    "build": "tsc",
+    "build": "rimraf ./lib && tsc",
     "test": "jest"
   },
   "repository": {
@@ -29,8 +29,18 @@
     "webql-js": "^15.4.1"
   },
   "devDependencies": {
+    "@babel/preset-env": "^7.12.10",
+    "@babel/preset-react": "^7.12.10",
+    "@babel/preset-typescript": "^7.12.7",
+    "@types/jest": "^26.0.19",
     "@types/react": "^17.0.0",
     "jest": "^26.6.3",
-    "react": "^17.0.1"
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1",
+    "react-hooks-testing-library": "^0.6.0",
+    "react-test-renderer": "^17.0.1",
+    "rimraf": "^3.0.2",
+    "webql-client": "^1.0.1",
+    "webql-nexus-schema": "^0.19.1"
   }
 }
