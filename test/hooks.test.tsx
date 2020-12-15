@@ -6,15 +6,29 @@ import { render, unmountComponentAtNode } from "react-dom";
 import { QueryClientProvider } from "react-query";
 import { Graphs } from "webql-client";
 import { act } from "react-dom/test-utils";
-import { TestComponent, webqlClient } from "./TestComponent";
+import {
+  MutationTestComponent,
+  QueryTestComponent,
+  webqlClient,
+} from "./TestComponent";
 
-const getProfileSuccess = {
+const profileSuccess = {
   load: () => {
     return new Promise((resolve, reject) => {
       resolve({
         ["#me"]: {
           id: "https://bejow.owntech.de/profile/card#me",
-          "foaf#name": "Ben Wetzel",
+          "foaf#name": "Lala Test",
+        },
+      });
+    });
+  },
+  patch: () => {
+    return new Promise((resolve, reject) => {
+      resolve({
+        ["#me"]: {
+          id: "https://bejow.owntech.de/profile/card#me",
+          "foaf#name": "Lala Sepp",
         },
       });
     });
@@ -42,17 +56,39 @@ describe("Hooks", () => {
   });
 
   it("should be able to render query hook", async () => {
-    Graphs.mockImplementation(() => getProfileSuccess);
+    Graphs.mockImplementation(() => profileSuccess);
     act(() => {
       render(
         <QueryClientProvider client={webqlClient.queryClient}>
-          <TestComponent />
+          <QueryTestComponent />
         </QueryClientProvider>,
         container
       );
     });
     expect(container.textContent).toBe("Loading...");
-    await act(() => sleep(500));
-    expect(container.textContent).toBe("Done fetching");
+    await act(async () => await sleep(500));
+    expect(container.textContent).toBe("Lala Test");
+  });
+
+  it("should be able to render mutation hook", async () => {
+    Graphs.mockImplementation(() => profileSuccess);
+    act(() => {
+      render(
+        <QueryClientProvider client={webqlClient.queryClient}>
+          <MutationTestComponent />
+        </QueryClientProvider>,
+        container
+      );
+    });
+    expect(document.querySelector('[data-test-id="name"]').innerHTML).toBe(
+      "Loading..."
+    );
+    await act(async () => {
+      document.querySelector("button").click();
+      await sleep(500);
+    });
+    expect(document.querySelector('[data-test-id="name"]').innerHTML).toBe(
+      "Lala Sepp"
+    );
   });
 });
