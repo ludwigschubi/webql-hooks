@@ -20,7 +20,6 @@ export const PersonMutations = extendType({
         webId: arg({ type: "String", required: true }),
       },
       resolve: async (_, { data, webId }) => {
-        console.log(data, webId)
         const graph = new Graphs(webId);
         const { name, email, role } = data;
         const profile = await graph.patch({
