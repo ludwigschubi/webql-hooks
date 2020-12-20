@@ -4,8 +4,9 @@
   "description": "A library that exposes hooks to query webql schemas",
   "main": "lib/index.js",
   "scripts": {
+    "postinstall": "yarn build",
     "build": "rimraf ./lib && tsc",
-    "test": "jest"
+    "test": "yarn build && jest"
   },
   "repository": {
     "type": "git",

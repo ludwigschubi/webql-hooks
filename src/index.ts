@@ -16,43 +16,63 @@ export interface Variables<TVariables> {
   variables?: TVariables;
 }
 
+export type MutationResult<
+  GraphQLQueryResult,
+  GraphQLVariables
+> = UseMutationResult<
+  GraphQLQueryResult,
+  any,
+  any,
+  UseMutationOptions<GraphQLQueryResult, any, Variables<GraphQLVariables>, any>
+>;
+
+export type MutationHookOptions<
+  GraphQLQueryResult,
+  GraphQLVariables
+> = UseMutationOptions<
+  GraphQLQueryResult,
+  any,
+  Variables<GraphQLVariables>,
+  any
+>;
+
+export type MutationFunction<
+  GraphQLQueryResult,
+  GraphQLVariables
+> = UseMutateFunction<
+  GraphQLQueryResult,
+  any,
+  Variables<GraphQLVariables>,
+  any
+>;
+
+export type MutationTuple<GraphQLQueryResult, GraphQLVariables> = [
+  MutationFunction<GraphQLQueryResult, GraphQLVariables>,
+  MutationResult<GraphQLQueryResult, GraphQLVariables>
+];
+
+export type QueryResult<
+  GraphQLQueryResult
+> = QueryObserverResult<GraphQLQueryResult>;
+
+export type QueryHookOptions<
+  GraphQLQueryResult,
+  GraphQLVariables
+> = QueryObserverOptions<GraphQLQueryResult, any> & Variables<GraphQLVariables>;
+
 export class WebQLClient {
   schema: GraphQLSchema;
   queryClient: QueryClient;
   useQuery: <GraphQLDocument, GraphQLVariables, GraphQLQueryResult>(
     this: WebQLClient,
     document: GraphQLDocument,
-    options?: QueryObserverOptions<GraphQLQueryResult, any> &
-      Variables<GraphQLVariables>
-  ) => QueryObserverResult<GraphQLQueryResult, any>;
+    options?: QueryHookOptions<GraphQLQueryResult, GraphQLVariables>
+  ) => QueryResult<GraphQLQueryResult>;
   useMutation: <GraphQLDocument, GraphQLVariables, GraphQLQueryResult>(
     this: WebQLClient,
     document: GraphQLDocument,
-    options?: UseMutationOptions<
-      GraphQLQueryResult,
-      any,
-      Variables<GraphQLVariables>,
-      any
-    >
-  ) => [
-    UseMutateFunction<
-      GraphQLQueryResult,
-      any,
-      Variables<GraphQLVariables>,
-      any
-    >,
-    UseMutationResult<
-      GraphQLQueryResult,
-      any,
-      any,
-      UseMutationOptions<
-        GraphQLQueryResult,
-        any,
-        Variables<GraphQLVariables>,
-        any
-      >
-    >
-  ];
+    options?: MutationHookOptions<GraphQLQueryResult, GraphQLVariables>
+  ) => MutationTuple<GraphQLQueryResult, GraphQLVariables>;
 
   constructor(schema: GraphQLSchema) {
     this.schema = schema;
@@ -115,25 +135,10 @@ export function useMutation<
       }) as Promise<GraphQLQueryResult>,
     options
   );
-  return [mutationResult.mutate, mutationResult] as [
-    UseMutateFunction<
-      GraphQLQueryResult,
-      any,
-      Variables<GraphQLVariables>,
-      any
-    >,
-    UseMutationResult<
-      GraphQLQueryResult,
-      any,
-      any,
-      UseMutationOptions<
-        GraphQLQueryResult,
-        any,
-        Variables<GraphQLVariables>,
-        any
-      >
-    >
-  ];
+  return [mutationResult.mutate, mutationResult] as MutationTuple<
+    GraphQLQueryResult,
+    GraphQLVariables
+  >;
 }
 
 export default WebQLClient;

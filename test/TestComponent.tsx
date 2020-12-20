@@ -61,7 +61,9 @@ export const MutationTestComponent: React.FC = () => {
         Change name
       </button>
       {testMutationResult?.data ? (
-        <div data-test-id="name">{testMutationResult.data.updatePerson.name}</div>
+        <div data-test-id="name">
+          {testMutationResult.data.updatePerson.name}
+        </div>
       ) : (
         <div data-test-id="name">Loading...</div>
       )}
