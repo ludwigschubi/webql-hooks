@@ -1,6 +1,6 @@
 {
   "name": "webql-hooks",
-  "version": "0.0.13",
+  "version": "0.0.12",
   "description": "A library that exposes hooks to query webql schemas",
   "main": "lib/index.js",
   "scripts": {
