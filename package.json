@@ -1,6 +1,6 @@
 {
   "name": "webql-hooks",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "A library that exposes hooks to query webql schemas",
   "main": "lib/index.js",
   "scripts": {
@@ -28,7 +28,7 @@
   "homepage": "https://github.com/ludwigschubi/webql-hooks#readme",
   "dependencies": {
     "react-query": "^3.2.0",
-    "typescript": "^4.0.4",
+    "typescript": "4.0.5",
     "webql-js": "^15.4.1"
   },
   "devDependencies": {
