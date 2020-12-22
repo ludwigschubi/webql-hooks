@@ -1,6 +1,6 @@
 {
   "name": "webql-hooks",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "A library that exposes hooks to query webql schemas",
   "main": "lib/index.js",
   "scripts": {
@@ -8,7 +8,7 @@
     "build": "rimraf ./lib && tsc",
     "test": "yarn build && jest",
     "prerelease": "yarn build && yarn test",
-    "release:patch": "yarn version --patch && yarn publish"
+    "release:patch": "yarn prerelease && yarn version --patch && yarn publish"
   },
   "repository": {
     "type": "git",
