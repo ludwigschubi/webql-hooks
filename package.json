@@ -1,12 +1,14 @@
 {
   "name": "webql-hooks",
-  "version": "0.0.0",
+  "version": "0.0.2",
   "description": "A library that exposes hooks to query webql schemas",
   "main": "lib/index.js",
   "scripts": {
     "postinstall": "yarn build",
     "build": "rimraf ./lib && tsc",
-    "test": "yarn build && jest"
+    "test": "yarn build && jest",
+    "prerelease": "yarn build && yarn test",
+    "release:patch": "yarn version --patch && yarn publish"
   },
   "repository": {
     "type": "git",
@@ -26,7 +28,7 @@
   "homepage": "https://github.com/ludwigschubi/webql-hooks#readme",
   "dependencies": {
     "react-query": "^3.2.0",
-    "typescript": "^4.1.3",
+    "typescript": "^4.0.4",
     "webql-js": "^15.4.1"
   },
   "devDependencies": {
