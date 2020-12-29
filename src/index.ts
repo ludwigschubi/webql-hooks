@@ -5,12 +5,11 @@ import {
   UseMutateFunction,
   UseMutationOptions,
   UseMutationResult,
-} from "react-query";
-import {
   useQuery as useReactQuery,
   useMutation as useReactMutation,
 } from "react-query";
-import { graphql, GraphQLSchema, Source } from "webql-js";
+export { QueryClientProvider as ClientProvider } from "react-query";
+import { DocumentNode, execute, GraphQLSchema, parse } from "graphql";
 
 export interface Variables<TVariables> {
   variables?: TVariables;
@@ -63,14 +62,14 @@ export type QueryHookOptions<
 export class WebQLClient {
   schema: GraphQLSchema;
   queryClient: QueryClient;
-  useQuery: <GraphQLDocument, GraphQLVariables, GraphQLQueryResult>(
+  useQuery: <GraphQLVariables, GraphQLQueryResult>(
     this: WebQLClient,
-    document: GraphQLDocument,
+    document: DocumentNode | string,
     options?: QueryHookOptions<GraphQLQueryResult, GraphQLVariables>
   ) => QueryResult<GraphQLQueryResult>;
-  useMutation: <GraphQLDocument, GraphQLVariables, GraphQLQueryResult>(
+  useMutation: <GraphQLVariables, GraphQLQueryResult>(
     this: WebQLClient,
-    document: GraphQLDocument,
+    document: DocumentNode | string,
     options?: MutationHookOptions<GraphQLQueryResult, GraphQLVariables>
   ) => MutationTuple<GraphQLQueryResult, GraphQLVariables>;
 
@@ -82,9 +81,9 @@ export class WebQLClient {
   }
 }
 
-export function useQuery<GraphQLDocument, GraphQLVariables, GraphQLQueryResult>(
+export function useQuery<GraphQLVariables, GraphQLQueryResult>(
   this: WebQLClient,
-  document: GraphQLDocument,
+  document: DocumentNode | string,
   options?: QueryObserverOptions<GraphQLQueryResult> &
     Variables<GraphQLVariables>
 ) {
@@ -92,23 +91,24 @@ export function useQuery<GraphQLDocument, GraphQLVariables, GraphQLQueryResult>(
   delete options?.variables;
   const queryResult = useReactQuery<GraphQLQueryResult, any>({
     queryFn: () =>
-      graphql({
+      execute({
         schema: this.schema,
-        source: (document as unknown) as Source | string,
+        document: typeof document === "string" ? parse(document) : document,
         variableValues: variables,
       }) as Promise<GraphQLQueryResult>,
     config: { ...(options as QueryObserverOptions), enabled: false },
-  } as QueryObserverOptions<GraphQLQueryResult>);
-  return queryResult;
+  } as QueryObserverOptions<GraphQLQueryResult>) as QueryObserverResult<{
+    data: GraphQLQueryResult;
+  }>;
+  return {
+    ...queryResult,
+    data: queryResult.data?.data,
+  } as QueryResult<GraphQLQueryResult>;
 }
 
-export function useMutation<
-  GraphQLDocument,
-  GraphQLVariables,
-  GraphQLQueryResult
->(
+export function useMutation<GraphQLVariables, GraphQLQueryResult>(
   this: WebQLClient,
-  document: GraphQLDocument,
+  document: DocumentNode | string,
   options?: UseMutationOptions<
     GraphQLQueryResult,
     any,
@@ -128,9 +128,9 @@ export function useMutation<
     >
   >(
     ({ variables }) =>
-      graphql({
+      execute({
         schema: this.schema,
-        source: (document as unknown) as Source | string,
+        document: typeof document === "string" ? parse(document) : document,
         variableValues: variables,
       }) as Promise<GraphQLQueryResult>,
     options
